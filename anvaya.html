@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anvaya — Semiconductor Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --obsidian: #0a0a0c;
+    --deep: #0f0f14;
+    --surface: #14141c;
+    --panel: #1a1a26;
+    --border: rgba(255,255,255,0.07);
+    --amber: #e8a838;
+    --amber-dim: #c4892a;
+    --amber-glow: rgba(232,168,56,0.12);
+    --amber-glow-strong: rgba(232,168,56,0.25);
+    --text-primary: #f0ede6;
+    --text-secondary: #9b9890;
+    --text-dim: #5a5855;
+    --silicon: #2a3a4a;
+    --teal: #3ab8b0;
+    --teal-dim: rgba(58,184,176,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--obsidian);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* WAFER PATTERN BACKGROUND */
+  .wafer-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .wafer-bg svg {
+    position: absolute;
+    top: -10%;
+    right: -5%;
+    width: 70vw;
+    max-width: 900px;
+    opacity: 0.035;
+    animation: wafer-drift 40s ease-in-out infinite alternate;
+  }
+  @keyframes wafer-drift {
+    from { transform: translate(0,0) rotate(0deg); }
+    to { transform: translate(-20px, 30px) rotate(3deg); }
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5vw;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,12,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo-mark {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--amber);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .nav-logo-mark::before {
+    content: '';
+    width: 10px; height: 10px;
+    background: var(--amber);
+    border-radius: 50%;
+    animation: pulse-dot 3s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.7); opacity: 0.5; }
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--amber); }
+  .nav-cta {
+    background: var(--amber) !important;
+    color: var(--obsidian) !important;
+    padding: 8px 20px;
+    border-radius: 2px;
+    font-weight: 500 !important;
+    letter-spacing: 0.05em !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--amber-dim) !important; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 5vw 80px;
+    overflow: hidden;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--amber);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--amber);
+  }
+
+  .hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 6rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 820px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.35s ease forwards;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .hero-sub {
+    margin-top: 2rem;
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 520px;
+    line-height: 1.75;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s ease forwards;
+  }
+
+  .hero-actions {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.65s ease forwards;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: var(--obsidian);
+    padding: 14px 32px;
+    border: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--amber-dim); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 14px 32px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* STAT BAR */
+  .stat-bar {
+    position: relative;
+    z-index: 2;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .stat-item {
+    padding: 2.5rem 1rem;
+    border-right: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item.visible { opacity: 1; transform: none; }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 0.5rem;
+  }
+
+  /* SECTION STRUCTURE */
+  section {
+    position: relative;
+    z-index: 2;
+    padding: 100px 5vw;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--amber);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-tag::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--amber);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    max-width: 680px;
+  }
+  .section-title em { font-style: italic; color: var(--amber); }
+
+  /* PROBLEM SECTION */
+  .problem { background: var(--deep); }
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 4rem;
+    align-items: start;
+  }
+  .problem-text p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+  .highlight-stat {
+    background: var(--amber-glow);
+    border: 1px solid rgba(232,168,56,0.25);
+    border-left: 3px solid var(--amber);
+    padding: 1.2rem 1.5rem;
+    margin-top: 2rem;
+    border-radius: 2px;
+  }
+  .highlight-stat .big {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .highlight-stat .caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.4rem;
+  }
+
+  /* WAFER MAP VISUAL */
+  .wafer-visual {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .wafer-map-container {
+    position: relative;
+    width: 240px;
+    height: 240px;
+  }
+  .wafer-map-container svg {
+    width: 100%;
+    height: 100%;
+  }
+  .wafer-legend {
+    display: flex;
+    gap: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 1px;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .wafer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--amber);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* PRODUCTS SECTION */
+  .products { background: var(--obsidian); }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 4rem;
+    border: 1px solid var(--border);
+  }
+  .product-card {
+    background: var(--obsidian);
+    padding: 2.5rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .product-card:hover::before { transform: scaleX(1); }
+  .product-card:hover { background: var(--surface); }
+  .product-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 1.5rem;
+  }
+  .product-icon {
+    width: 40px; height: 40px;
+    margin-bottom: 1.2rem;
+    color: var(--amber);
+    opacity: 0.8;
+  }
+  .product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: var(--text-primary);
+  }
+  .product-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+  .product-tag {
+    margin-top: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--amber);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .product-tag::before {
+    content: '→';
+    font-size: 0.8rem;
+  }
+
+  /* HOW IT WORKS */
+  .how { background: var(--deep); }
+  .process-steps {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 900px;
+  }
+  .process-step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .process-step:first-child { border-top: 1px solid var(--border); }
+  .process-step.visible { opacity: 1; transform: none; }
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    line-height: 1;
+    padding-top: 0.2rem;
+  }
+  .step-content {}
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  .step-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-width: 600px;
+  }
+  .step-tag {
+    margin-top: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* FOUNDER */
+  .founder { background: var(--obsidian); }
+  .founder-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+  .founder-portrait {
+    position: relative;
+  }
+  .portrait-frame {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .portrait-initials {
+    font-family: 'Playfair Display', serif;
+    font-size: 6rem;
+    font-weight: 600;
+    color: var(--amber);
+    opacity: 0.2;
+    letter-spacing: -0.02em;
+  }
+  .portrait-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(232,168,56,0.05) 100%);
+  }
+  .portrait-accent {
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 60%; height: 60%;
+    border-right: 2px solid var(--amber);
+    border-bottom: 2px solid var(--amber);
+    border-radius: 0 0 2px 0;
+    pointer-events: none;
+  }
+  .founder-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+  }
+  .founder-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--amber);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .founder-bio {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.85;
+    margin-bottom: 1.5rem;
+  }
+  .founder-credentials {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .credential {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .credential-icon {
+    color: var(--amber);
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+  }
+
+  /* MARKET */
+  .market { background: var(--surface); }
+  .market-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    margin-top: 4rem;
+  }
+  .market-card {
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--panel);
+    transition: border-color 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
+  }
+  .market-card.visible { opacity: 1; transform: none; }
+  .market-card:hover { border-color: rgba(232,168,56,0.3); }
+  .market-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .market-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  .market-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: var(--deep);
+    padding: 120px 5vw;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,56,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.15;
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+  .cta-sub {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.75;
+  }
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 2;
+    background: var(--obsidian);
+    border-top: 1px solid var(--border);
+    padding: 3rem 5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--amber); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DIVIDER LINE */
+  .h-line {
+    height: 1px;
+    background: var(--border);
+    margin: 0 5vw;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s ease forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--amber), transparent);
+    animation: scroll-pulse 2s ease-in-out infinite;
+  }
+  @keyframes scroll-pulse {
+    0%,100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .scroll-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .stat-bar { grid-template-columns: 1fr 1fr; }
+    .problem-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .products-grid { grid-template-columns: 1fr; }
+    .market-grid { grid-template-columns: 1fr; }
+    .founder-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .portrait-frame { max-width: 220px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WAFER CIRCUIT BACKGROUND -->
+<div class="wafer-bg">
+  <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <circle cx="400" cy="400" r="395" stroke="white" stroke-width="0.8"/>
+    <circle cx="400" cy="400" r="330" stroke="white" stroke-width="0.4"/>
+    <circle cx="400" cy="400" r="260" stroke="white" stroke-width="0.4"/>
+    <circle cx="400" cy="400" r="190" stroke="white" stroke-width="0.4"/>
+    <circle cx="400" cy="400" r="120" stroke="white" stroke-width="0.4"/>
+    <!-- Die grid -->
+    <g stroke="white" stroke-width="0.3" opacity="0.6">
+      <line x1="100" y1="400" x2="700" y2="400"/>
+      <line x1="400" y1="100" x2="400" y2="700"/>
+      <line x1="160" y1="200" x2="160" y2="600"/>
+      <line x1="240" y1="120" x2="240" y2="680"/>
+      <line x1="320" y1="90" x2="320" y2="710"/>
+      <line x1="480" y1="90" x2="480" y2="710"/>
+      <line x1="560" y1="120" x2="560" y2="680"/>
+      <line x1="640" y1="200" x2="640" y2="600"/>
+      <line x1="200" y1="160" x2="600" y2="160"/>
+      <line x1="120" y1="240" x2="680" y2="240"/>
+      <line x1="90" y1="320" x2="710" y2="320"/>
+      <line x1="90" y1="480" x2="710" y2="480"/>
+      <line x1="120" y1="560" x2="680" y2="560"/>
+      <line x1="200" y1="640" x2="600" y2="640"/>
+    </g>
+    <!-- Defect markers -->
+    <circle cx="240" cy="320" r="6" fill="white" opacity="0.9"/>
+    <circle cx="480" cy="240" r="4" fill="white" opacity="0.6"/>
+    <circle cx="560" cy="480" r="7" fill="white" opacity="0.8"/>
+    <circle cx="320" cy="560" r="5" fill="white" opacity="0.5"/>
+    <circle cx="160" cy="400" r="4" fill="white" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark"></div>
+    Anvaya
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#products">Platform</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#contact" class="nav-cta">Request Demo</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Semiconductor Intelligence · Founded 2024</div>
+  <h1 class="hero-headline">
+    Every wafer tells<br/>a story. We teach<br/><em>fabs to read it.</em>
+  </h1>
+  <p class="hero-sub">
+    Anvaya is an AI platform that turns wafer defect maps, process sensor data, and fab telemetry into real-time yield intelligence — closing the gap between what a fab produces and what it could.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Request a Demo</a>
+    <a href="#products" class="btn-outline">See the Platform</a>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar" id="stats">
+  <div class="stat-item">
+    <div class="stat-number">1%</div>
+    <div class="stat-label">Yield gain = $100M+ per fab line</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">700+</div>
+    <div class="stat-label">Process steps per wafer</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">3 nm</div>
+    <div class="stat-label">Feature sizes driving zero-tolerance defect regimes</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">$600B</div>
+    <div class="stat-label">Global semiconductor market by 2030</div>
+  </div>
+</div>
+
+<!-- PROBLEM SECTION -->
+<section class="problem" id="problem">
+  <div class="section-tag">The Problem</div>
+  <h2 class="section-title">
+    Modern fabs generate petabytes of data<br/>and act on almost <em>none of it.</em>
+  </h2>
+  <div class="problem-grid">
+    <div class="problem-text">
+      <p>
+        Advanced chip manufacturing involves over 700 sequential process steps, each generating sensor readings, metrology measurements, and defect inspection images. By the time a wafer reaches final test, actionable signals from step 47 are long buried under noise.
+      </p>
+      <p>
+        Conventional statistical process control (SPC) catches drift after the damage is done. Root-cause analysis is still largely manual — engineers spending weeks correlating defect maps to process excursions. Meanwhile, every failed wafer at an advanced node represents $10,000–$50,000 in sunk cost.
+      </p>
+      <p>
+        The problem compounds across the supply chain: a yield excursion at one fab disrupts allocation across every downstream customer, with no intelligent rebalancing layer to absorb the shock.
+      </p>
+      <div class="highlight-stat">
+        <div class="big">~40%</div>
+        <div class="caption">Of yield loss is attributable to systematic, correctable process variation — detectable before the wafer reaches final test.</div>
+      </div>
+    </div>
+    <!-- WAFER MAP VISUAL -->
+    <div class="wafer-visual">
+      <div class="wafer-label">Live Wafer Defect Map · Lot 4472</div>
+      <div class="wafer-map-container">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="wafer-circle">
+              <circle cx="100" cy="100" r="92"/>
+            </clipPath>
+          </defs>
+          <!-- Background wafer -->
+          <circle cx="100" cy="100" r="92" fill="#1a1a26" stroke="#2a2a3a" stroke-width="1.5"/>
+          <!-- Die grid -->
+          <g clip-path="url(#wafer-circle)" stroke="#2a3a4a" stroke-width="0.5">
+            <line x1="20" y1="20" x2="20" y2="180"/>
+            <line x1="36" y1="20" x2="36" y2="180"/>
+            <line x1="52" y1="20" x2="52" y2="180"/>
+            <line x1="68" y1="20" x2="68" y2="180"/>
+            <line x1="84" y1="20" x2="84" y2="180"/>
+            <line x1="100" y1="20" x2="100" y2="180"/>
+            <line x1="116" y1="20" x2="116" y2="180"/>
+            <line x1="132" y1="20" x2="132" y2="180"/>
+            <line x1="148" y1="20" x2="148" y2="180"/>
+            <line x1="164" y1="20" x2="164" y2="180"/>
+            <line x1="180" y1="20" x2="180" y2="180"/>
+            <line x1="20" y1="20" x2="180" y2="20"/>
+            <line x1="20" y1="36" x2="180" y2="36"/>
+            <line x1="20" y1="52" x2="180" y2="52"/>
+            <line x1="20" y1="68" x2="180" y2="68"/>
+            <line x1="20" y1="84" x2="180" y2="84"/>
+            <line x1="20" y1="100" x2="180" y2="100"/>
+            <line x1="20" y1="116" x2="180" y2="116"/>
+            <line x1="20" y1="132" x2="180" y2="132"/>
+            <line x1="20" y1="148" x2="180" y2="148"/>
+            <line x1="20" y1="164" x2="180" y2="164"/>
+            <line x1="20" y1="180" x2="180" y2="180"/>
+          </g>
+          <!-- Good dies (green) -->
+          <g clip-path="url(#wafer-circle)" fill="#1e3a2e" stroke="#2a5a3a" stroke-width="0.3">
+            <rect x="52" y="52" width="15" height="15"/>
+            <rect x="68" y="52" width="15" height="15"/>
+            <rect x="84" y="52" width="15" height="15"/>
+            <rect x="100" y="52" width="15" height="15"/>
+            <rect x="116" y="52" width="15" height="15"/>
+            <rect x="36" y="68" width="15" height="15"/>
+            <rect x="52" y="68" width="15" height="15"/>
+            <rect x="68" y="68" width="15" height="15"/>
+            <rect x="84" y="68" width="15" height="15"/>
+            <rect x="100" y="68" width="15" height="15"/>
+            <rect x="116" y="68" width="15" height="15"/>
+            <rect x="132" y="68" width="15" height="15"/>
+            <rect x="36" y="84" width="15" height="15"/>
+            <rect x="68" y="84" width="15" height="15"/>
+            <rect x="84" y="84" width="15" height="15"/>
+            <rect x="100" y="84" width="15" height="15"/>
+            <rect x="116" y="84" width="15" height="15"/>
+            <rect x="132" y="84" width="15" height="15"/>
+            <rect x="36" y="100" width="15" height="15"/>
+            <rect x="52" y="100" width="15" height="15"/>
+            <rect x="84" y="100" width="15" height="15"/>
+            <rect x="100" y="100" width="15" height="15"/>
+            <rect x="132" y="100" width="15" height="15"/>
+            <rect x="148" y="100" width="15" height="15"/>
+            <rect x="36" y="116" width="15" height="15"/>
+            <rect x="52" y="116" width="15" height="15"/>
+            <rect x="68" y="116" width="15" height="15"/>
+            <rect x="84" y="116" width="15" height="15"/>
+            <rect x="100" y="116" width="15" height="15"/>
+            <rect x="116" y="116" width="15" height="15"/>
+            <rect x="132" y="116" width="15" height="15"/>
+            <rect x="52" y="132" width="15" height="15"/>
+            <rect x="68" y="132" width="15" height="15"/>
+            <rect x="84" y="132" width="15" height="15"/>
+            <rect x="100" y="132" width="15" height="15"/>
+            <rect x="116" y="132" width="15" height="15"/>
+          </g>
+          <!-- Defect dies (amber/red) - cluster pattern -->
+          <g clip-path="url(#wafer-circle)" fill="#3a1a08" stroke="#8a3a10" stroke-width="0.3">
+            <rect x="52" y="84" width="15" height="15"/>
+            <rect x="68" y="100" width="15" height="15"/>
+            <rect x="116" y="100" width="15" height="15"/>
+          </g>
+          <!-- Critical defects -->
+          <g clip-path="url(#wafer-circle)" fill="#4a0808" stroke="#cc2222" stroke-width="0.5">
+            <rect x="52" y="84" width="15" height="15"/>
+          </g>
+          <!-- Wafer notch -->
+          <path d="M 100 192 A 2 2 0 0 1 104 192" stroke="#2a2a3a" stroke-width="1.5" fill="none"/>
+          <circle cx="100" cy="100" r="92" fill="none" stroke="#2a2a3a" stroke-width="1.5"/>
+          <!-- Anvaya AI scan line animation -->
+          <line x1="8" y1="84" x2="192" y2="84" stroke="#e8a838" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.6">
+            <animateTransform attributeName="transform" type="translate" values="0,0;0,100;0,0" dur="6s" repeatCount="indefinite"/>
+          </line>
+        </svg>
+      </div>
+      <div class="wafer-legend">
+        <span><span class="legend-dot" style="background:#2a5a3a"></span>Pass</span>
+        <span><span class="legend-dot" style="background:#8a3a10"></span>Marginal</span>
+        <span><span class="legend-dot" style="background:#cc2222"></span>Fail</span>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--amber);letter-spacing:0.1em;text-align:center;">
+        AI scan active · Cluster defect detected · Step 284 correlation pending
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS SECTION -->
+<section class="products" id="products">
+  <div class="section-tag">The Platform</div>
+  <h2 class="section-title">Four modules.<br/>One <em>connected</em> intelligence layer.</h2>
+  <div class="products-grid">
+
+    <div class="product-card">
+      <div class="product-number">01</div>
+      <svg class="product-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
+        <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/>
+        <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/>
+        <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/>
+        <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>
+      </svg>
+      <div class="product-name">YieldSight</div>
+      <div class="product-desc">
+        Predictive yield modeling from multi-layer wafer defect maps. Spatial deep learning identifies killer defect clusters, predicts final yield distribution, and flags lots at risk — hours before electrical test, not after.
+      </div>
+      <div class="product-tag">Yield Prediction Engine</div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-number">02</div>
+      <svg class="product-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      <div class="product-name">ProcessARC</div>
+      <div class="product-desc">
+        Closed-loop automated process control using reinforcement learning. Continuously correlates equipment sensor data with inline metrology to propose — and with customer approval, execute — compensatory recipe adjustments before drift becomes excursion.
+      </div>
+      <div class="product-tag">Automated Process Control</div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-number">03</div>
+      <svg class="product-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+        <path d="M6 8h.01M10 8h4M18 8h.01M6 12h12"/>
+      </svg>
+      <div class="product-name">DesignGuard</div>
+      <div class="product-desc">
+        AI-accelerated design rule checking (DRC) that goes beyond geometric verification. DesignGuard learns process-specific printability margins from historical SEM data, flagging design patterns statistically likely to yield fail — before tape-out.
+      </div>
+      <div class="product-tag">Design Rule Intelligence</div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-number">04</div>
+      <svg class="product-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+        <circle cx="7" cy="7" r="1" fill="currentColor"/>
+        <circle cx="17" cy="7" r="1" fill="currentColor"/>
+      </svg>
+      <div class="product-name">FabFlow</div>
+      <div class="product-desc">
+        Intelligent supply chain allocation across multi-fab networks. When a yield excursion occurs at one node, FabFlow rebalances wafer starts, prioritizes customer commits by margin, and surfaces reallocation options — in real time.
+      </div>
+      <div class="product-tag">Supply Chain Intelligence</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-tag">How It Works</div>
+  <h2 class="section-title">From raw fab data<br/>to <em>prescriptive action</em></h2>
+  <div class="process-steps" id="process-steps">
+
+    <div class="process-step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <div class="step-title">Ingest & Unify</div>
+        <div class="step-desc">
+          Anvaya connects to existing fab data infrastructure — KLA, Applied Materials, ASML inspection systems, MES platforms, and equipment OPC-UA endpoints — via a zero-disruption integration layer. No rip-and-replace.
+        </div>
+        <div class="step-tag">// Data connectors · SEMI standards · SECS/GEM · KIF</div>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <div class="step-title">Model & Learn</div>
+        <div class="step-desc">
+          Spatial graph neural networks map defect cluster morphology to process signatures. Contrastive learning across historical lot data surfaces non-obvious correlations between step-N events and step-N+200 yield outcomes. Models are fab-specific and continuously updated.
+        </div>
+        <div class="step-tag">// GNN · Contrastive learning · Causal inference · Time-series</div>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <div class="step-title">Predict & Prescribe</div>
+        <div class="step-desc">
+          Every lot receives a live yield forecast updated at each inspection point. When risk crosses a threshold, Anvaya surfaces the most probable root cause, the corrective action with highest expected yield recovery, and the confidence interval — so engineers decide with full context, not instinct.
+        </div>
+        <div class="step-tag">// Explainable AI · Uncertainty quantification · Root cause scoring</div>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <div class="step-title">Act & Close the Loop</div>
+        <div class="step-desc">
+          Approved interventions — recipe tweaks, lot holds, reallocation decisions — flow back through ProcessARC and FabFlow into the control system. Outcomes feed back into the model. The fab gets measurably smarter with every wafer processed.
+        </div>
+        <div class="step-tag">// Closed-loop APC · RLHF-style feedback · Continuous improvement</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MARKET -->
+<section class="market" id="market">
+  <div class="section-tag">Market Opportunity</div>
+  <h2 class="section-title">A trillion-dollar industry<br/>running on <em>yesterday's tools.</em></h2>
+  <div class="market-grid" id="market-grid">
+    <div class="market-card">
+      <div class="market-num">$18B</div>
+      <div class="market-label">Semiconductor Process Control TAM</div>
+      <div class="market-desc">Global market for yield management, APC, and fab analytics software — growing 14% annually as node complexity scales.</div>
+    </div>
+    <div class="market-card">
+      <div class="market-num">$200B+</div>
+      <div class="market-label">Annual yield loss across the industry</div>
+      <div class="market-desc">Estimated cost of defect-driven yield loss globally. Even recovering 5% of this through better AI represents a $10B opportunity.</div>
+    </div>
+    <div class="market-card">
+      <div class="market-num">40+</div>
+      <div class="market-label">Advanced logic & memory fabs worldwide</div>
+      <div class="market-desc">Each representing a flagship deployment opportunity — with dozens of mature-node fabs providing an accessible beachhead.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER SECTION -->
+<section class="founder" id="founder">
+  <div class="section-tag">The Founder</div>
+  <div class="founder-inner">
+    <div class="founder-portrait">
+      <div class="portrait-frame">
+        <div class="portrait-initials">AB</div>
+        <div class="portrait-accent"></div>
+      </div>
+    </div>
+    <div class="founder-text">
+      <div class="founder-name">Amit Bhartiya</div>
+      <div class="founder-title">Founder & CEO · Anvaya</div>
+      <p class="founder-bio">
+        Amit built Anvaya from a single conviction: that semiconductor manufacturing is the most data-rich industry on earth, and also one of the least data-driven in its decision-making. Having spent years at the intersection of process engineering and machine learning, he saw firsthand how yield engineers made billion-dollar decisions from incomplete information — and how much systematic signal was being discarded at every step.
+      </p>
+      <p class="founder-bio">
+        Anvaya is his answer to that gap. Not a dashboarding tool, not another SPC add-on — but a full inference layer that treats the fab as a learning system. Amit's thesis is that the next competitive frontier in semiconductors isn't lithography equipment or EUV access. It's who turns process data into compounding yield advantage faster.
+      </p>
+      <div class="founder-credentials">
+        <div class="credential">
+          <span class="credential-icon">◈</span>
+          <span>Deep background in semiconductor process physics and ML systems applied to manufacturing</span>
+        </div>
+        <div class="credential">
+          <span class="credential-icon">◈</span>
+          <span>Operational experience inside advanced logic fabs — understands what yield engineers actually need on the floor</span>
+        </div>
+        <div class="credential">
+          <span class="credential-icon">◈</span>
+          <span>Built Anvaya's core defect-map modeling engine from first principles, validated on real wafer data</span>
+        </div>
+        <div class="credential">
+          <span class="credential-icon">◈</span>
+          <span>Engaging foundries and IDMs across the US and Asia for pilot programs in 2025</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="section-tag" style="justify-content:center;">Get In Touch</div>
+  <h2 class="cta-headline">
+    Ready to see what your wafer data has been trying to tell you?
+  </h2>
+  <p class="cta-sub">
+    We're working with a select group of fabs and IDMs on early access pilots. If you run yield engineering at an advanced node, we'd like to talk.
+  </p>
+  <div class="cta-actions">
+    <a href="mailto:amit@anvaya.ai" class="btn-primary">Request a Demo</a>
+    <a href="mailto:amit@anvaya.ai" class="btn-outline">Contact the Founder</a>
+  </div>
+</section>
+
+<div class="h-line"></div>
+
+<footer>
+  <div class="footer-logo">Anvaya</div>
+  <ul class="footer-links">
+    <li><a href="#problem">Platform</a></li>
+    <li><a href="#how">Technology</a></li>
+    <li><a href="#founder">About</a></li>
+    <li><a href="mailto:amit@anvaya.ai">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2024 Anvaya Inc. · Semiconductor Intelligence</div>
+</footer>
+
+<script>
+  // Intersection Observer for reveal animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, entry.target.dataset.delay || 0);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  // Stat items
+  document.querySelectorAll('.stat-item').forEach((el, i) => {
+    el.dataset.delay = i * 120;
+    observer.observe(el);
+  });
+
+  // Process steps
+  document.querySelectorAll('.process-step').forEach((el, i) => {
+    el.dataset.delay = i * 100;
+    observer.observe(el);
+  });
+
+  // Market cards
+  document.querySelectorAll('.market-card').forEach((el, i) => {
+    el.dataset.delay = i * 100;
+    observer.observe(el);
+  });
+
+  // Smooth active nav link
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.getAttribute('id');
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--amber)' : '';
+    });
+  });
+</script>
+</body>
+</html>
